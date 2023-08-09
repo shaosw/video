@@ -81,8 +81,9 @@
       var endSecond = document.getElementById('endSecond').value;
       
       var url = document.getElementById('url').value;
-      
-      var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\\%(uploader)s_%(start_time)s_%(end_time)s.mp4" ${url}`;
+      var currentDate = new Date();
+      var timestamp = currentDate.getTime(); // 获取当前时间的时间戳
+      var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\\%(uploader)s_${timestamp}.mp4" ${url}`;
       
       document.getElementById('commandOutput').innerText = command;
       document.getElementById('copyButton').style.display = 'block';
@@ -111,6 +112,7 @@
     document.getElementById('url').addEventListener('keydown', function(event) {
       if (event.keyCode === 13) {
         generateCommand();
+        copyToClipboard();
       }
     });
   </script>
