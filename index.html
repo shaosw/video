@@ -1,87 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>命令生成器</title>
-    <style>
-        #command-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background-color: #45a049;
-        }
-    </style>
-    <script>
-        function generateCommand() {
-            var startHour = document.getElementById("start-hour").value;
-            var startMinute = document.getElementById("start-minute").value;
-            var startSecond = document.getElementById("start-second").value;
-            var endHour = document.getElementById("end-hour").value;
-            var endMinute = document.getElementById("end-minute").value;
-            var endSecond = document.getElementById("end-second").value;
-            var url = document.getElementById("url").value;
-
-            var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\%(uploader)s_%(start_time)s_%(end_time)s.mp4" ${url}`;
-
-            var commandOutput = document.getElementById("command-output");
-            commandOutput.value = command;
-        }
-
-        function copyCommand() {
-            var commandOutput = document.getElementById("command-output");
-            commandOutput.select();
-            document.execCommand("copy");
-            alert("命令已复制到剪贴板！");
-        }
-
-        function openCmd() {
-            var commandOutput = document.getElementById("command-output").value;
-            var cmdCommand = "cmd /c start cmd.exe /K \"" + commandOutput + "\"";
-            window.open(cmdCommand, "_blank");
-        }
-
-        function handleKeyPress(event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-                generateCommand();
-            }
-        }
-    </script>
+  <title>命令生成器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      margin-top: 5px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    #commandOutput {
+      margin-top: 20px;
+      background-color: #f5f5f5;
+      padding: 10px;
+    }
+    
+    #copyButton,
+    #openCmdButton {
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>命令生成器</h1>
-    <label for="start-hour">开始时间（时:分:秒）：</label>
-    <input type="text" id="start-hour" placeholder="时"> :
-    <input type="text" id="start-minute" placeholder="分"> :
-    <input type="text" id="start-second" placeholder="秒"><br><br>
+  <div class="container">
+    <h2>命令生成器</h2>
+    <label for="startHour">开始时间（小时）:</label>
+    <input type="text" id="startHour" placeholder="时">
+    <input type="text" id="startMinute" placeholder="分">
+    <input type="text" id="startSecond" placeholder="秒">
+    
+    <label for="endHour">结束时间（小时）:</label>
+    <input type="text" id="endHour" placeholder="时">
+    <input type="text" id="endMinute" placeholder="分">
+    <input type="text" id="endSecond" placeholder="秒">
+    
+    <label for="url">URL:</label>
+    <input type="text" id="url" placeholder="请输入URL">
+    
+    <button onclick="generateCommand()">生成命令</button>
+    
+    <div id="commandOutput"></div>
+    
+    <button id="copyButton" onclick="copyToClipboard()">复制</button>
+    <button id="openCmdButton" onclick="openCmd()">打开CMD</button>
+  </div>
 
-    <label for="end-hour">结束时间（时:分:秒）：</label>
-    <input type="text" id="end-hour" placeholder="时"> :
-    <input type="text" id="end-minute" placeholder="分"> :
-    <input type="text" id="end-second" placeholder="秒"><br><br>
-
-    <label for="url">URL：</label>
-    <input type="text" id="url" placeholder="URL" style="width: 100%;" maxlength="1000" onkeypress="handleKeyPress(event)"><br><br>
-
-    <button onclick="generateCommand()" class="button">生成命令</button>
-
-    <div id="command-buttons">
-        <button onclick="copyCommand()" class="button">复制命令</button>
-        <button onclick="openCmd()" class="button">执行命令</button>
-    </div>
-
-    <textarea id="command-output" rows="5" cols="60" readonly></textarea>
-
+  <script>
+    function generateCommand() {
+      var startHour = document.getElementById('startHour').value;
+      var startMinute = document.getElementById('startMinute').value;
+      var startSecond = document.getElementById('startSecond').value;
+      
+      var endHour = document.getElementById('endHour').value;
+      var endMinute = document.getElementById('endMinute').value;
+      var endSecond = document.getElementById('endSecond').value;
+      
+      var url = document.getElementById('url').value;
+      
+      var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\\%(uploader)s_%(start_time)s_%(end_time)s.mp4" ${url}`;
+      
+      document.getElementById('commandOutput').innerText = command;
+      document.getElementById('copyButton').style.display = 'block';
+      document.getElementById('openCmdButton').style.display = 'block';
+    }
+    
+    function copyToClipboard() {
+      var commandOutput = document.getElementById('commandOutput');
+      var range = document.createRange();
+      range.selectNode(commandOutput);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      alert('命令已复制到剪贴板!');
+    }
+    
+    function openCmd() {
+      var command = document.getElementById('commandOutput').innerText;
+      var cmdCommand = `start cmd.exe /K "${command}"`;
+      
+      var shell = new ActiveXObject("WScript.Shell");
+      shell.run(cmdCommand);
+    }
+    
+    document.getElementById('url').addEventListener('keydown', function(event) {
+      if (event.keyCode === 13) {
+        generateCommand();
+      }
+    });
+  </script>
 </body>
 </html>
