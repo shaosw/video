@@ -32,7 +32,7 @@
             var endSecond = document.getElementById("end-second").value;
             var url = document.getElementById("url").value;
 
-            var command = `/usr/local/sbin/yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "%(uploader)s_%(start_time)s_%(end_time)s.mp4" ${url}`;
+            var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\%(uploader)s_%(start_time)s_%(end_time)s.mp4" ${url}`;
 
             var commandOutput = document.getElementById("command-output");
             commandOutput.value = command;
