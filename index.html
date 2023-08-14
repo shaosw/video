@@ -1,120 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>生成器</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 10px;
-    }
-    
-    input[type="text"] {
-      width: 100%;
-      padding: 5px;
-      margin-top: 5px;
-    }
-    
-    button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    
-    #commandOutput {
-      margin-top: 20px;
-      background-color: #f5f5f5;
-      padding: 10px;
-    }
-    
-    #copyButton,
-    #openCmdButton {
-      display: none;
-      margin-top: 10px;
-    }
-  </style>
+    <title> </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 5px;
+            font-size: 16px;
+        }
+        
+        .command-output {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-wrap: break-word;
+            margin-bottom: 20px;
+        }
+        
+        .copy-button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function generateString() {
+            var urlInput = document.getElementById("url");
+            var startTimeInput = document.getElementById("start-time");
+            var endTimeInput = document.getElementById("end-time");
+            var commandOutput = document.getElementById("command-output");
+            var copyButton = document.getElementById("copy-button");
+
+            var url = urlInput.value;
+            var startTime = timeToSeconds(startTimeInput.value);
+            var endTime = timeToSeconds(endTimeInput.value);
+
+            if (!validateTimeFormat(startTimeInput.value) || !validateTimeFormat(endTimeInput.value)) {
+                return;
+            }
+
+            var videoId = extractVideoId(url);
+
+            var command = "TwitchDownloaderCLI videodownload --id " + videoId + " -q 720p60 -b " + startTime + " -e " + endTime + " -o " + videoId + ".mp4";
+            commandOutput.textContent = command;
+
+            var tempInput = document.createElement("input");
+            tempInput.value = command;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+        }
+
+        function validateTimeFormat(time) {
+            var pattern = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+            return pattern.test(time);
+        }
+
+        function timeToSeconds(time) {
+            var parts = time.split(":");
+            var hours = parseInt(parts[0]);
+            var minutes = parseInt(parts[1]);
+            var seconds = parseInt(parts[2]);
+
+            return hours * 3600 + minutes * 60 + seconds;
+        }
+
+        function extractVideoId(url) {
+            var parts = url.split("/");
+            return parts[parts.length - 1];
+        }
+    </script>
 </head>
 <body>
-  <div class="container">
-    <h2>命令生成器</h2>
-    <label for="startHour">开始时间（小时）:</label>
-    <input type="text" id="startHour" placeholder="时">
-    <input type="text" id="startMinute" placeholder="分">
-    <input type="text" id="startSecond" placeholder="秒">
-    
-    <label for="endHour">结束时间（小时）:</label>
-    <input type="text" id="endHour" placeholder="时">
-    <input type="text" id="endMinute" placeholder="分">
-    <input type="text" id="endSecond" placeholder="秒">
-    
-    <label for="url">URL:</label>
-    <input type="text" id="url" placeholder="请输入URL">
-    
-    <button onclick="generateCommand()">生成命令</button>
-    
-    <div id="commandOutput"></div>
-    
-    <button id="copyButton" onclick="copyToClipboard()">复制</button>
-    <button id="openCmdButton" onclick="openCmd()">打开CMD</button>
-  </div>
+    <h1> </h1>
+    <div class="input-group">
+        <label for="url">URL:</label>
+        <input type="text" id="url" onkeydown="if(event.keyCode===13) generateString()">
+    </div>
+    <div class="input-group">
+        <label for="start-time">Start Time:</label>
+        <input type="text" id="start-time" onkeydown="if(event.keyCode===13) generateString()">
+    </div>
+    <div class="input-group">
+        <label for="end-time">End Time:</label>
+        <input type="text" id="end-time" onkeydown="if(event.keyCode===13) generateString()">
+    </div>
+    <div class="command-output" id="command-output"></div>
 
-  <script>
-    function generateCommand() {
-      var startHour = document.getElementById('startHour').value;
-      var startMinute = document.getElementById('startMinute').value;
-      var startSecond = document.getElementById('startSecond').value;
-      
-      var endHour = document.getElementById('endHour').value;
-      var endMinute = document.getElementById('endMinute').value;
-      var endSecond = document.getElementById('endSecond').value;
-      
-      var url = document.getElementById('url').value;
-      var currentDate = new Date();
-      var timestamp = currentDate.getTime(); // 获取当前时间的时间戳
-      var command = `yt-dlp --proxy 127.0.0.1:33211 --external-downloader ffmpeg --external-downloader-args ffmpeg:"-ss ${startHour}:${startMinute}:${startSecond} -to ${endHour}:${endMinute}:${endSecond}" -f "bestvideo[height<=720]+bestaudio/best[height<=720]" -o "d:\\%(uploader)s_${timestamp}.mp4" ${url}`;
-      
-      document.getElementById('commandOutput').innerText = command;
-      document.getElementById('copyButton').style.display = 'block';
-      document.getElementById('openCmdButton').style.display = 'block';
-    }
-    
-    function copyToClipboard() {
-      var commandOutput = document.getElementById('commandOutput');
-      var range = document.createRange();
-      range.selectNode(commandOutput);
-      window.getSelection().removeAllRanges();
-      window.getSelection().addRange(range);
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
-  
-    }
-    
-    function openCmd() {
-      var command = document.getElementById('commandOutput').innerText;
-      var cmdCommand = `start cmd.exe /K "${command}"`;
-      
-      var shell = new ActiveXObject("WScript.Shell");
-      shell.run(cmdCommand);
-    }
-    
-    document.getElementById('url').addEventListener('keydown', function(event) {
-      if (event.keyCode === 13) {
-        generateCommand();
-        copyToClipboard();
-      }
-    });
-  </script>
+    <script>
+        var urlInput = document.getElementById("url");
+        var startTimeInput = document.getElementById("start-time");
+        var endTimeInput = document.getElementById("end-time");
+
+        urlInput.addEventListener("keydown", function(event) {
+            if (event.keyCode === 13) {
+                startTimeInput.focus();
+            }
+        });
+
+        startTimeInput.addEventListener("keydown", function(event) {
+            if (event.keyCode === 13) {
+                endTimeInput.focus();
+            }
+        });
+
+        endTimeInput.addEventListener("keydown", function(event) {
+            if (event.keyCode === 13) {
+                generateString();
+            }
+        });
+    </script>
 </body>
 </html>
