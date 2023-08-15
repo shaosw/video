@@ -57,12 +57,12 @@
             var copyButton = document.getElementById("copy-button");
 
             var url = urlInput.value;
-            var startTime = timeToSeconds(startTimeInput.value);
-            var endTime = timeToSeconds(endTimeInput.value);
+            var s=formatStringToTime(startTimeInput.value)
+            var e=formatStringToTime(endTimeInput.value)
+            var startTime = timeToSeconds(s);
+            var endTime = timeToSeconds(e);
 
-            if (!validateTimeFormat(startTimeInput.value) || !validateTimeFormat(endTimeInput.value)) {
-                return;
-            }
+   
 
             var videoId = extractVideoId(url);
 
@@ -77,7 +77,20 @@
             document.body.removeChild(tempInput);
 
         }
-
+        function formatStringToTime(string) {
+            // 移除字符串中的所有非数字字符
+            const digitsOnly = string.replace(/\D/g, '');
+          
+            // 提取时、分、秒的值
+            const hours = digitsOnly.substring(0, 2);
+            const minutes = digitsOnly.substring(2, 4);
+            const seconds = digitsOnly.substring(4, 6);
+          
+            // 格式化为时间格式
+            const formattedTime = hours + ':' + minutes + ':' + seconds;
+          
+            return formattedTime;
+          }
         function validateTimeFormat(time) {
             var pattern = /^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
             return pattern.test(time);
