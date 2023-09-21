@@ -66,7 +66,7 @@
 
             var videoId = extractVideoId(url);
 
-            var command = "TwitchDownloaderCLI videodownload --id " + videoId + " -q 720p60 -b " + startTime + " -e " + endTime + "  --banner false -o d:\\" + videoId + ".mp4";
+            var command = "set http_proxy=http://127.0.0.1:33211 & set https_proxy=http://127.0.0.1:33211 & TwitchDownloaderCLI videodownload --id " + videoId + " -q 720p60 -b " + startTime + " -e " + endTime + "  --banner false -o d:\\" + videoId + ".mp4";
             commandOutput.textContent = command;
 
             var tempInput = document.createElement("input");
